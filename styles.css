@@ -1,0 +1,238 @@
+/* ============================================
+   UNDER CONSTRUCTION — STYLES
+   Color Palette: Ungu (Lilac) & Kuning (Gold)
+   Font: VariousdemoRegular (headline) + Roboto (body)
+   ============================================ */
+
+/* --- Custom Font --- */
+@font-face {
+    font-family: 'VariousDemo';
+    src: url('VariousdemoRegular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* --- Reset & Base --- */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #c77ddb; /* Lilac ungu dari latar logo */
+    color: #fff;
+    font-family: 'Roboto', sans-serif;
+    min-height: 100vh;
+    overflow: hidden;
+    cursor: crosshair;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* --- Main Container --- */
+.container {
+    text-align: center;
+    z-index: 10;
+    position: relative;
+    padding: 2rem;
+    max-width: 700px;
+}
+
+/* --- Logo --- */
+.logo-wrapper {
+    margin-bottom: 1.5rem;
+    animation: jitter 0.15s infinite alternate;
+}
+
+.logo {
+    width: 260px;
+    height: auto;
+    object-fit: contain;
+    border-radius: 20px;
+    /* Make white background transparent-looking by blending */
+    mix-blend-mode: multiply;
+    filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.7));
+    transition: transform 0.3s ease;
+}
+
+.logo:hover {
+    transform: scale(1.15) rotate(8deg);
+    filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.9));
+}
+
+/* --- Title (HIGHMFS) --- */
+.title {
+    font-family: 'VariousDemo', 'Bangers', cursive;
+    font-size: 5rem;
+    line-height: 1.1;
+    letter-spacing: 6px;
+    margin-bottom: 0.5rem;
+    color: #FFD700;
+    text-shadow:
+        3px 3px 0 #6b21a8,
+        -1px -1px 0 #6b21a8,
+        0 0 25px rgba(255, 215, 0, 0.5);
+    animation: rubberBand 1.5s ease infinite;
+}
+
+/* --- Subtitle (Website Under Construction) --- */
+.subtitle {
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+    color: #fff;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+/* --- Tagline (We'll be back.) --- */
+.tagline {
+    font-family: 'Roboto', sans-serif;
+    font-size: 1rem;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 2.5rem;
+    font-style: italic;
+}
+
+/* --- Visitor Counter (small & subtle) --- */
+.visitor-counter {
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 0.5px;
+}
+
+.visitor-counter span {
+    color: rgba(255, 215, 0, 0.5);
+    font-weight: 400;
+}
+
+/* --- Floating Stars (Decorative Background) --- */
+.floating-star {
+    position: fixed;
+    font-size: 2rem;
+    opacity: 0.5;
+    z-index: 1;
+    pointer-events: none;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+
+.star-1 { top: 10%; left: 5%;  font-size: 2.5rem; animation: float1 4s infinite alternate; }
+.star-2 { top: 20%; right: 8%; font-size: 1.8rem; animation: float2 5s infinite alternate; }
+.star-3 { top: 60%; left: 10%; font-size: 2rem;   animation: float3 3.5s infinite alternate; }
+.star-4 { bottom: 15%; right: 5%;  font-size: 2.2rem; animation: float1 4.5s infinite alternate; }
+.star-5 { top: 40%; right: 15%; font-size: 1.5rem; animation: float2 3s infinite alternate; }
+.star-6 { bottom: 30%; left: 3%;  font-size: 2rem;  animation: float3 5.5s infinite alternate; }
+
+/* --- Cursor Trail Star (Injected by JS) --- */
+.trail-star {
+    position: fixed;
+    pointer-events: none;
+    z-index: 999;
+    width: 12px;
+    height: 12px;
+    animation: trailFade 0.9s ease-out forwards;
+}
+
+.trail-star svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 4px currentColor);
+}
+
+/* ============================================
+   KEYFRAME ANIMATIONS
+   ============================================ */
+
+/* Logo Jitter — subtle funny shake */
+@keyframes jitter {
+    0%   { transform: translate(0, 0) rotate(0deg); }
+    25%  { transform: translate(-2px, 1px) rotate(-1deg); }
+    50%  { transform: translate(1px, -2px) rotate(1deg); }
+    75%  { transform: translate(-1px, 2px) rotate(-0.5deg); }
+    100% { transform: translate(2px, -1px) rotate(0.5deg); }
+}
+
+/* Rubber Band — title bounce */
+@keyframes rubberBand {
+    0%   { transform: scale(1); }
+    30%  { transform: scaleX(1.15) scaleY(0.85); }
+    40%  { transform: scaleX(0.9) scaleY(1.1); }
+    50%  { transform: scaleX(1.05) scaleY(0.95); }
+    65%  { transform: scaleX(0.98) scaleY(1.02); }
+    75%  { transform: scaleX(1.02) scaleY(0.98); }
+    100% { transform: scale(1); }
+}
+
+/* Floating stars */
+@keyframes float1 {
+    0%   { transform: translateY(0) rotate(0deg); }
+    100% { transform: translateY(-30px) rotate(20deg); }
+}
+
+@keyframes float2 {
+    0%   { transform: translateY(0) rotate(0deg) scale(1); }
+    100% { transform: translateY(-25px) rotate(-15deg) scale(1.1); }
+}
+
+@keyframes float3 {
+    0%   { transform: translateY(0) translateX(0); }
+    100% { transform: translateY(-20px) translateX(15px); }
+}
+
+/* Trail Fade — cursor star trail */
+@keyframes trailFade {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1) rotate(0deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-40px) scale(0.3) rotate(180deg);
+    }
+}
+
+/* Bounce In — entrance */
+@keyframes bounceIn {
+    0%   { opacity: 0; transform: scale(0.3); }
+    50%  { opacity: 1; transform: scale(1.1); }
+    70%  { transform: scale(0.9); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+/* Fade In Up */
+@keyframes fadeInUp {
+    0%   { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 600px) {
+    .logo {
+        width: 180px;
+    }
+    .title {
+        font-size: 3rem;
+        letter-spacing: 3px;
+    }
+    .subtitle {
+        font-size: 1rem;
+    }
+    .tagline {
+        font-size: 0.9rem;
+    }
+    .floating-star {
+        font-size: 1.5rem;
+    }
+}
