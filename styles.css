@@ -25,12 +25,15 @@ body {
     color: #fff;
     font-family: 'Roboto', sans-serif;
     min-height: 100vh;
-    overflow: hidden;
+    min-height: 100dvh; /* Dynamic viewport height for mobile browsers */
+    overflow-x: hidden;
+    overflow-y: auto;
     cursor: crosshair;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 1rem;
 }
 
 /* --- Main Container --- */
@@ -38,8 +41,9 @@ body {
     text-align: center;
     z-index: 10;
     position: relative;
-    padding: 2rem;
+    padding: 2rem 1.5rem;
     max-width: 700px;
+    width: 100%;
 }
 
 /* --- Logo --- */
@@ -49,7 +53,8 @@ body {
 }
 
 .logo {
-    width: 260px;
+    width: clamp(150px, 40vw, 260px);
+    max-width: 80%;
     height: auto;
     object-fit: contain;
     border-radius: 20px;
@@ -67,9 +72,9 @@ body {
 /* --- Title (HIGHMFS) --- */
 .title {
     font-family: 'VariousDemo', 'Bangers', cursive;
-    font-size: 5rem;
+    font-size: clamp(2.5rem, 10vw, 5rem);
     line-height: 1.1;
-    letter-spacing: 6px;
+    letter-spacing: clamp(2px, 1vw, 6px);
     margin-bottom: 0.5rem;
     color: #FFD700;
     text-shadow:
@@ -77,33 +82,34 @@ body {
         -1px -1px 0 #6b21a8,
         0 0 25px rgba(255, 215, 0, 0.5);
     animation: rubberBand 1.5s ease infinite;
+    word-break: break-word;
 }
 
 /* --- Subtitle (Website Under Construction) --- */
 .subtitle {
     font-family: 'Roboto', sans-serif;
-    font-size: 1.3rem;
+    font-size: clamp(0.9rem, 3vw, 1.3rem);
     font-weight: 500;
     margin-bottom: 0.4rem;
     color: #fff;
-    letter-spacing: 2px;
+    letter-spacing: clamp(1px, 0.5vw, 2px);
     text-transform: uppercase;
 }
 
 /* --- Tagline (We'll be back.) --- */
 .tagline {
     font-family: 'Roboto', sans-serif;
-    font-size: 1rem;
+    font-size: clamp(0.8rem, 2.5vw, 1rem);
     font-weight: 300;
     color: rgba(255, 255, 255, 0.7);
-    margin-bottom: 2.5rem;
+    margin-bottom: clamp(1.5rem, 5vw, 2.5rem);
     font-style: italic;
 }
 
 /* --- Visitor Counter (small & subtle) --- */
 .visitor-counter {
     font-family: 'Roboto', sans-serif;
-    font-size: 0.75rem;
+    font-size: clamp(0.65rem, 2vw, 0.75rem);
     font-weight: 300;
     color: rgba(255, 255, 255, 0.4);
     letter-spacing: 0.5px;
@@ -117,7 +123,7 @@ body {
 /* --- Floating Stars (Decorative Background) --- */
 .floating-star {
     position: fixed;
-    font-size: 2rem;
+    font-size: clamp(1.2rem, 4vw, 2rem);
     opacity: 0.5;
     z-index: 1;
     pointer-events: none;
@@ -126,12 +132,12 @@ body {
     animation-direction: alternate;
 }
 
-.star-1 { top: 10%; left: 5%;  font-size: 2.5rem; animation: float1 4s infinite alternate; }
-.star-2 { top: 20%; right: 8%; font-size: 1.8rem; animation: float2 5s infinite alternate; }
-.star-3 { top: 60%; left: 10%; font-size: 2rem;   animation: float3 3.5s infinite alternate; }
-.star-4 { bottom: 15%; right: 5%;  font-size: 2.2rem; animation: float1 4.5s infinite alternate; }
-.star-5 { top: 40%; right: 15%; font-size: 1.5rem; animation: float2 3s infinite alternate; }
-.star-6 { bottom: 30%; left: 3%;  font-size: 2rem;  animation: float3 5.5s infinite alternate; }
+.star-1 { top: 10%; left: 5%;  font-size: clamp(1.5rem, 5vw, 2.5rem); animation: float1 4s infinite alternate; }
+.star-2 { top: 20%; right: 8%; font-size: clamp(1.2rem, 4vw, 1.8rem); animation: float2 5s infinite alternate; }
+.star-3 { top: 60%; left: 10%; font-size: clamp(1.2rem, 4.5vw, 2rem);   animation: float3 3.5s infinite alternate; }
+.star-4 { bottom: 15%; right: 5%;  font-size: clamp(1.3rem, 4.5vw, 2.2rem); animation: float1 4.5s infinite alternate; }
+.star-5 { top: 40%; right: 15%; font-size: clamp(1rem, 3.5vw, 1.5rem); animation: float2 3s infinite alternate; }
+.star-6 { bottom: 30%; left: 3%;  font-size: clamp(1.2rem, 4vw, 2rem);  animation: float3 5.5s infinite alternate; }
 
 /* --- Cursor Trail Star (Injected by JS) --- */
 .trail-star {
@@ -213,26 +219,4 @@ body {
 @keyframes fadeInUp {
     0%   { opacity: 0; transform: translateY(20px); }
     100% { opacity: 1; transform: translateY(0); }
-}
-
-/* ============================================
-   RESPONSIVE
-   ============================================ */
-@media (max-width: 600px) {
-    .logo {
-        width: 180px;
-    }
-    .title {
-        font-size: 3rem;
-        letter-spacing: 3px;
-    }
-    .subtitle {
-        font-size: 1rem;
-    }
-    .tagline {
-        font-size: 0.9rem;
-    }
-    .floating-star {
-        font-size: 1.5rem;
-    }
 }
