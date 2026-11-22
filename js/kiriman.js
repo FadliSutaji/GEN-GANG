@@ -12,16 +12,16 @@
         seen.add(row.id);
         const url=publicRoot+row.lokasi_file;
         if(row.jenis==='video'){
-            channels.push({id:row.id,title:'Video ucapan',uploadedAt:row.dibuat_pada,url});
+            channels.push({id:row.id,title:row.judul||'Video ucapan',editedAt:row.diedit_pada,uploadedAt:row.dibuat_pada,url});
             renderVideoList(el('list'),()=>videoWindow.minimize());
             renderVideoList(cinemaEntries,closeCinemaList);
-        }else addCollageCard({id:row.id,title:row.judul||'Kartu pos',uploadedAt:row.dibuat_pada,tag:'',lines:[row.caption],photo:url},true);
+        }else addCollageCard({id:row.id,title:row.judul||'Kartu pos',editedAt:row.diedit_pada,uploadedAt:row.dibuat_pada,tag:'',lines:[row.caption],photo:url},true);
     }
-    window.renameShared=async(id,title)=>{
-        const code=prompt('Kode admin untuk mengedit judul');
-        if(!code)return false;
-        try{await api({action:'rename',id,title,code});return true}
-        catch(e){alert(e.message);return false}
+    window.editShared=async changes=>{
+        const code=prompt('Kode admin untuk mengedit kiriman');
+        if(!code)return null;
+        try{return await api({...changes,code})}
+        catch(e){alert(e.message);return null}
     };
     async function upload(file,caption,code,title){
         const {path,url}=await api({action:'sign',code,type:file.type});

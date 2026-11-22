@@ -6,6 +6,17 @@
 <link rel="stylesheet" href="css/style.css">
 
 <body class="desktop">
+<div id="tv-loading" role="status">
+  <div class="tv-loading-screen">
+    <strong>HIGH MFS TV</strong>
+    <span>Memuat ruangan 3D…</span>
+    <progress aria-label="Memuat ruangan 3D"></progress>
+  </div>
+</div>
+<script>
+  setTimeout(() => document.getElementById('tv-loading')?.remove(), 15000);
+</script>
+<noscript><style>#tv-loading { display: none; }</style></noscript>
 <header>
 <b>HIGH MFS ✳</b>
 <span>FRIENDS NETWORK</span>

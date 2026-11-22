@@ -3,7 +3,7 @@ const channels=['Selamat ulang tahun!','Breaking News Anak Kos','Klarifikasi Jam
 const uploadDateFormat = new Intl.DateTimeFormat('id-ID', {
     timeZone: 'Asia/Jakarta', dateStyle: 'medium', timeStyle: 'short'
 });
-function uploadTime(timestamp) {
+function uploadTime(timestamp, prefix = '') {
     const time = document.createElement('time');
     const date = timestamp ? new Date(timestamp) : null;
     if (!date || Number.isNaN(date.getTime())) {
@@ -11,7 +11,7 @@ function uploadTime(timestamp) {
         return time;
     }
     time.dateTime = date.toISOString();
-    time.textContent = uploadDateFormat.format(date) + ' WIB';
+    time.textContent = prefix + uploadDateFormat.format(date) + ' WIB';
     return time;
 }
 const watched=new Set(), video=document.querySelector('video'), dialog=document.querySelector('dialog');
@@ -42,6 +42,11 @@ function renderVideoList(list, pick) {
         const timestamp = uploadTime(channel.uploadedAt);
         timestamp.style.display = timestamp.hidden ? 'none' : 'block';
         item.append(timestamp);
+        if (channel.editedAt) {
+            const edited = uploadTime(channel.editedAt, 'Edited ');
+            edited.style.display = 'block';
+            item.append(edited);
+        }
         item.onclick = () => { tune(index); pick(); };
         const row = document.createElement('div');
         row.className = 'media-list-row';
@@ -81,7 +86,21 @@ function renderVideoList(list, pick) {
             renderVideoList(otherList,otherPick);
         });
         remove.setAttribute('aria-label','Hapus video '+channel.title);
-        row.append(item,remove);
+        const actions = document.createElement('div');
+        if (channel.id) actions.append(button('Edit judul', async () => {
+            const title = prompt('Judul video', channel.title)?.trim();
+            if (!title || title === channel.title) return;
+            if (title.length > 90) return alert('Judul maksimal 90 karakter.');
+            const updated = await window.editShared({action:'rename',kind:'video',id:channel.id,title});
+            if (!updated) return;
+            channel.title = updated.judul;
+            channel.editedAt = updated.diedit_pada;
+            if (on && channels[current] === channel) el('headline').textContent = channel.title;
+            renderVideoList(el('list'), () => videoWindow.minimize());
+            renderVideoList(cinemaEntries, closeCinemaList);
+        }));
+        actions.append(remove);
+        row.append(item,actions);
         list.append(row);
     }
 }

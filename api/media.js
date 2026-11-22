@@ -15,13 +15,18 @@ module.exports = async function handler(req,res){
     return response;
   }
   try {
-    if(action==='rename'){
+    if(action==='rename' || action==='edit-caption'){
       if(!process.env.ADMIN_CODE || code!==process.env.ADMIN_CODE) return res.status(403).end();
-      const title=req.body.title;
-      if(!/^[a-f0-9-]{36}$/.test(id)||typeof title!=='string'||!title.trim()||title.length>90) return res.status(400).end();
-      headers.Prefer='return=representation';
-      const rows=await (await call('/rest/v1/media_kiriman?id=eq.'+id+'&jenis=eq.foto','PATCH',{judul:title.trim()})).json();
-      return rows.length ? res.json({ok:true}) : res.status(404).end();
+      const editingCaption = action === 'edit-caption';
+      const value = editingCaption ? caption : req.body.title;
+      const kind = editingCaption ? 'foto' : (req.body.kind ?? 'foto');
+      if (!/^[a-f0-9-]{36}$/.test(id) || !['foto','video'].includes(kind)
+          || typeof value !== 'string' || !value.trim() || value.trim().length > (editingCaption ? 600 : 90))
+        return res.status(400).end();
+      headers.Prefer = 'return=representation';
+      const changes = {[editingCaption ? 'caption' : 'judul']: value.trim(), diedit_pada: new Date().toISOString()};
+      const rows = await (await call('/rest/v1/media_kiriman?id=eq.'+id+'&jenis=eq.'+kind,'PATCH',changes)).json();
+      return rows.length ? res.json(rows[0]) : res.status(404).end();
     }
     if(action==='delete'){
       if(!process.env.ADMIN_CODE || code!==process.env.ADMIN_CODE) return res.status(403).end();

@@ -213,6 +213,7 @@ try {
     const tvSize = tvBounds.getSize(new THREE.Vector3());
     const normalEye = new THREE.Vector3();
     const closeEye = new THREE.Vector3();
+    let firstFrameRendered = false;
     const animatedFocus = new THREE.Vector3();
     const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
     let cinematicBlend = 0;
@@ -255,8 +256,13 @@ try {
         }
         texture.needsUpdate = true;
         renderer.render(scene,camera);
+        if (!firstFrameRendered) {
+            firstFrameRendered = true;
+            document.getElementById('tv-loading')?.remove();
+        }
     });
 } catch (error) {
+    document.getElementById('tv-loading')?.remove();
     document.querySelector('.tv').classList.remove('ready');
     el('roomHint').textContent = matchMedia("(pointer:coarse)").matches ? "Geser 360° · Cubit untuk zoom" : '3D gagal dimuat. Cek internet dan WebGL.';
     console.warn('3D preview unavailable', error);

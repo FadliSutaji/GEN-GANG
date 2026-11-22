@@ -17,20 +17,37 @@ function addCollageCard(entry, prepend = false) {
         const heading = document.createElement('h2');
         heading.textContent = entry.title;
         paper.append(heading,uploadTime(entry.uploadedAt));
+        function updateEdited(timestamp) {
+            entry.editedAt = timestamp;
+            edited.replaceWith(edited = uploadTime(timestamp,'Edited '));
+            detailEdited.replaceWith(detailEdited = uploadTime(timestamp,'Edited '));
+        }
+        let detailEdited = uploadTime(entry.editedAt,'Edited ');
+        paper.append(detailEdited);
+        if(entry.id) paper.append(button('Edit caption',async()=>{
+            const caption = prompt('Caption foto',entry.lines[0])?.trim();
+            if (!caption || caption === entry.lines[0]) return;
+            if (caption.length > 600) return alert('Caption maksimal 600 karakter.');
+            const updated = await window.editShared({action:'edit-caption',id:entry.id,caption});
+            if (!updated) return;
+            entry.lines[0] = updated.caption;
+            captionPreview.textContent = paragraph.textContent = updated.caption;
+            updateEdited(updated.diedit_pada);
+        }));
         if(entry.id) paper.append(button('Edit judul',async()=>{
             const next=prompt('Judul kartu',entry.title)?.trim();
             if(!next || next===entry.title)return;
             if(next.length>90){alert('Judul maksimal 90 karakter.');return}
-            if(await window.renameShared(entry.id,next)){
+            const updated = await window.editShared({action:'rename',id:entry.id,title:next});
+            if(updated){
+                updateEdited(updated.diedit_pada);
                 entry.title=next;
                 title.textContent=heading.textContent=photo.alt=next;
             }
         }));
-        for (const line of entry.lines) {
-            const paragraph = document.createElement('p');
-            paragraph.textContent = line;
-            paper.append(paragraph);
-        }
+        const paragraph = document.createElement('p');
+        paragraph.textContent = entry.lines.join('\n');
+        paper.append(paragraph);
         letterDetail.replaceChildren(photo,paper);
         openLetterEntry = entry;
         if (entry.photo) paper.append(button('Hapus kartu', removeCard));
@@ -45,9 +62,10 @@ function addCollageCard(entry, prepend = false) {
     title.textContent = entry.title;
     const label = document.createElement('small');
     label.textContent = entry.tag;
-    card.append(preview,title,label,uploadTime(entry.uploadedAt));
+    let edited = uploadTime(entry.editedAt,'Edited ');
+    card.append(preview,title,label,uploadTime(entry.uploadedAt),edited);
+    const captionPreview = document.createElement('small');
     if (entry.photo) {
-        const captionPreview = document.createElement('small');
         captionPreview.className = 'caption-preview';
         captionPreview.textContent = entry.lines[0];
         card.append(captionPreview);
