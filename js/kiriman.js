@@ -54,8 +54,9 @@
     };
     window.deleteShared=async id=>{
         const code=prompt('Kode admin untuk menghapus kiriman');
-        if(!code)return;
-        try{await api({action:'delete',code,id});location.reload()}catch(e){alert(e.message)}
+        if(!code)return false;
+        try{await api({action:'delete',code,id});seen.add(id);return true}
+        catch(e){alert(e.message);return false}
     };
     try{
         const response=await fetch(config.url+'/rest/v1/media_kiriman?select=*&order=dibuat_pada.asc,id.asc',{headers:{apikey:config.publishableKey}});

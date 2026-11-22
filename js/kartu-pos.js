@@ -55,16 +55,16 @@ function addCollageCard(entry, prepend = false) {
     const tile = document.createElement('div');
     tile.className = 'collage-tile';
     tile.append(card);
-    function removeCard() {
-        if(entry.id) return window.deleteShared(entry.id);
+    async function removeCard() {
         if (!window.confirm('Hapus foto, judul, dan caption ini?')) return;
+        if(entry.id && !await window.deleteShared(entry.id)) return;
         if (openLetterEntry === entry) {
             letterWindow.close();
             letterDetail.replaceChildren();
             openLetterEntry = null;
         }
         tile.remove();
-        URL.revokeObjectURL(entry.photo);
+        if(!entry.id) URL.revokeObjectURL(entry.photo);
     }
     if (entry.photo) tile.append(button('Hapus foto', removeCard));
     if (prepend) collage.prepend(tile);

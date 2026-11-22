@@ -7,7 +7,7 @@ function tune(index){
  const channel=channels[current];video.pause();video.hidden=!channel.url;
  el('headline').textContent=channel.title;el('tag').textContent='★ CHANNEL CONTOH ★';
  el('station').textContent='● CH '+String(current+1).padStart(2,'0');el('power').textContent='⏻ Matikan TV';
- if(channel.url){video.src=channel.url;video.play().catch(()=>{});}else{watched.add(current);}
+ if(channel.url){video.crossOrigin=channel.id ? 'anonymous' : null;video.src=channel.url;video.play().catch(()=>{});}else{watched.add(current);}
 }
 video.onended=()=>watched.add(current);
 el('power').onclick=()=>{if(!on){tune(current);return;}on=false;video.pause();video.hidden=true;el('headline').textContent='Bintang Hari Ini!';el('tag').textContent='★ BIRTHDAY BROADCAST ★';el('station').textContent='● STANDBY';el('power').textContent='⏻ Nyalakan TV';};
@@ -28,23 +28,25 @@ function renderVideoList(list, pick) {
         item.onclick = () => { tune(index); pick(); };
         const row = document.createElement('div');
         row.className = 'media-list-row';
-        const remove = button('Hapus', () => {
-            if(channel.id) return window.deleteShared(channel.id);
+        const remove = button('Hapus', async () => {
             if (!window.confirm('Hapus video "' + channel.title + '" dari daftar?')) return;
+            if(channel.id && !await window.deleteShared(channel.id)) return;
             const activeChannel = channels[current];
+            const removedIndex = channels.indexOf(channel);
+            if(removedIndex < 0) return;
             const wasPlaying = on && activeChannel === channel;
-            channels.splice(index,1);
+            channels.splice(removedIndex,1);
             const previousWatched = [...watched];
             watched.clear();
             for (const entry of previousWatched) {
-                if (entry !== index) watched.add(entry > index ? entry - 1 : entry);
+                if (entry !== removedIndex) watched.add(entry > removedIndex ? entry - 1 : entry);
             }
             if (wasPlaying || video.getAttribute('src') === channel.url) {
                 video.pause();
                 video.removeAttribute('src');
                 video.load();
             }
-            URL.revokeObjectURL(channel.url);
+            if(!channel.id) URL.revokeObjectURL(channel.url);
             if (wasPlaying) {
                 const remaining = channels.findIndex(entry => entry.url);
                 if (remaining >= 0) tune(remaining);
