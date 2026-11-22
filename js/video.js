@@ -1,7 +1,8 @@
 const el=id=>document.getElementById(id);
 const channels=['Selamat ulang tahun!','Breaking News Anak Kos','Klarifikasi Jam 2 Pagi'].map(title=>({title}));
 const uploadDateFormat = new Intl.DateTimeFormat('id-ID', {
-    timeZone: 'Asia/Jakarta', dateStyle: 'medium', timeStyle: 'short'
+    timeZone: 'Asia/Jakarta', day: '2-digit', month: '2-digit', year: 'numeric',
+    hour: '2-digit', minute: '2-digit', hourCycle: 'h23'
 });
 function uploadTime(timestamp, prefix = '') {
     const time = document.createElement('time');
@@ -11,7 +12,8 @@ function uploadTime(timestamp, prefix = '') {
         return time;
     }
     time.dateTime = date.toISOString();
-    time.textContent = prefix + uploadDateFormat.format(date) + ' WIB';
+    const parts = Object.fromEntries(uploadDateFormat.formatToParts(date).map(({type,value}) => [type,value]));
+    time.textContent = prefix + parts.day + '/' + parts.month + '/' + parts.year + ' ' + parts.hour + '.' + parts.minute;
     return time;
 }
 const watched=new Set(), video=document.querySelector('video'), dialog=document.querySelector('dialog');
