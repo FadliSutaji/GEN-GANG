@@ -94,6 +94,29 @@ body.desktop .tv.cinema:not(.ready) .screen{border:clamp(12px,3vw,36px) solid #6
 .tv-timeline button:disabled{opacity:.55;cursor:default}
 .remote-shell .tv-timeline span{color:#fff1d1}
 .tv.cinema .cinema-video-list:not([hidden]){bottom:min(257px,42dvh)}
+
+@media(max-width:700px),(max-height:520px) and (pointer:coarse){
+ body.desktop .tv{height:100dvh}
+ .desktop-dock{flex-wrap:nowrap;gap:5px}
+ .desktop-dock>div{min-width:0;overflow-x:auto}
+ .desktop-dock button{white-space:nowrap;min-height:42px}
+ .os-window,.os-window.maximized{inset:8px 8px calc(65px + env(safe-area-inset-bottom))!important;width:auto!important;height:auto!important;min-height:0;max-height:none;max-width:none;resize:none}
+ .os-content{min-height:0;overscroll-behavior:contain}
+ .os-content input,.os-content textarea{max-width:100%;font-size:16px}
+ .os-start{max-height:calc(100dvh - 76px);overflow:auto}
+ .os-icons{top:6px;left:6px;right:6px;display:flex;overflow:auto;gap:2px}
+ .os-icons button{flex:0 0 64px;font-size:11px}
+ body.desktop #roomHint{bottom:calc(64px + env(safe-area-inset-bottom));font-size:11px}
+ .tv.cinema .cinema-remote{animation:none;right:8px;bottom:max(8px,env(safe-area-inset-bottom));max-height:40dvh;overflow:auto}
+ .remote-shell{width:min(370px,calc(100vw - 16px));grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:6px}
+ .remote-shell button{min-height:36px}
+ .remote-shell .tv-timeline{grid-column:1/-1}
+ .tv.cinema .cinema-video-list:not([hidden]){top:55px;bottom:auto;max-height:calc(100dvh - 70px)}
+}
+@media(orientation:landscape) and (max-height:520px) and (pointer:coarse){
+ .tv.cinema .cinema-remote{max-height:calc(100dvh - 64px)}
+ .remote-shell{width:23vw;grid-template-columns:repeat(2,minmax(0,1fr))}
+}
 </style><body class="desktop"><header><b>HIGH MFS ✳</b><span>FRIENDS NETWORK</span></header><main><h1>HIGH MFS <i>TV</i></h1><div class="console"><section class="tv"><div class="screen"><div class="poster"><small id="tag">★ BIRTHDAY BROADCAST ★</small><strong id="headline">Bintang<br>Hari Ini!</strong></div><video controls playsinline hidden></video></div><div class="stage3d" role="img" aria-label="Ruangan 3D HIGH MFS TV"></div><div class="strip"><span id="station" aria-live="polite">● STANDBY</span><span id="roomHint"></span></div></section><section class="remote"><h2>REMOTE CONTROL</h2><button class="wide" id="power">⏻ Nyalakan TV</button><div class="row"><button id="prev">CH −</button><button id="next">CH +</button></div><button class="wide" id="tv-fullscreen" type="button">⛶ Fullscreen video</button><p id="fullscreen-note" role="status" hidden></p><button class="wide" id="guide">☷ List Video</button></section></div><label class="upload">＋ Tambah video teman<input type="file" accept="video/*" multiple></label><p class="note">Pilih beberapa video sekaligus. Video diputar dari perangkatmu dan tersedia selama halaman ini terbuka.</p>
 <style>
 .postcard {max-width:700px;margin:55px auto 18px;text-align:center}
@@ -765,19 +788,29 @@ try {
         zoom = 1;
         pose();
     });
-    let drag = null;
+    const fingers = new Map();
+    function span(){
+        const [a,b] = fingers.values();
+        return Math.hypot(a.x-b.x,a.y-b.y);
+    }
     host.addEventListener('pointerdown', event => {
-        drag = {x:event.clientX,y:event.clientY};
+        fingers.set(event.pointerId,{x:event.clientX,y:event.clientY});
         host.setPointerCapture(event.pointerId);
     });
     host.addEventListener('pointermove', event => {
-        if (!drag) return;
-        angle = (angle - (event.clientX-drag.x)*.008) % (2*Math.PI);
-        elevation = THREE.MathUtils.clamp(elevation+(event.clientY-drag.y)*.004,.02,.5);
-        drag = {x:event.clientX,y:event.clientY};
+        const prev = fingers.get(event.pointerId);
+        if (!prev) return;
+        const distance = fingers.size === 2 ? span() : 0;
+        fingers.set(event.pointerId,{x:event.clientX,y:event.clientY});
+        if (fingers.size === 1){
+            angle -= (event.clientX-prev.x)*.008;
+            elevation = THREE.MathUtils.clamp(elevation+(event.clientY-prev.y)*.004,.02,.5);
+        } else if(distance > 1 && span() > 1){
+            zoom = THREE.MathUtils.clamp(zoom*distance/span(),.67,1.55);
+        }
         pose();
     });
-    host.addEventListener('lostpointercapture', () => { drag = null; });
+    host.addEventListener('lostpointercapture', event => fingers.delete(event.pointerId));
     host.addEventListener('wheel', event => {
         event.preventDefault();
         zoom = THREE.MathUtils.clamp(zoom*Math.exp(event.deltaY*.001),.67,1.55);
@@ -812,7 +845,7 @@ try {
         angle += event.key === 'ArrowLeft' ? -.16 : .16;
         pose();
     });
-    el('roomHint').textContent = 'Geser 360° • Scroll untuk zoom';
+    el('roomHint').textContent = matchMedia("(pointer:coarse)").matches ? "Geser 360° · Cubit untuk zoom" : 'Geser 360° • Scroll untuk zoom';
 
     const tvBounds = new THREE.Box3().setFromObject(model);
     const tvCenter = tvBounds.getCenter(new THREE.Vector3());
@@ -864,7 +897,7 @@ try {
     });
 } catch (error) {
     document.querySelector('.tv').classList.remove('ready');
-    el('roomHint').textContent = '3D gagal dimuat. Cek internet dan WebGL.';
+    el('roomHint').textContent = matchMedia("(pointer:coarse)").matches ? "Geser 360° · Cubit untuk zoom" : '3D gagal dimuat. Cek internet dan WebGL.';
     console.warn('3D preview unavailable', error);
 }
 </script>
