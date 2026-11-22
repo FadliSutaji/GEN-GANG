@@ -15,6 +15,14 @@ module.exports = async function handler(req,res){
     return response;
   }
   try {
+    if(action==='rename'){
+      if(!process.env.ADMIN_CODE || code!==process.env.ADMIN_CODE) return res.status(403).end();
+      const title=req.body.title;
+      if(!/^[a-f0-9-]{36}$/.test(id)||typeof title!=='string'||!title.trim()||title.length>90) return res.status(400).end();
+      headers.Prefer='return=representation';
+      const rows=await (await call('/rest/v1/media_kiriman?id=eq.'+id+'&jenis=eq.foto','PATCH',{judul:title.trim()})).json();
+      return rows.length ? res.json({ok:true}) : res.status(404).end();
+    }
     if(action==='delete'){
       if(!process.env.ADMIN_CODE || code!==process.env.ADMIN_CODE) return res.status(403).end();
       if(!/^[0-9a-f-]{36}$/.test(id)) return res.status(400).end();
@@ -37,7 +45,8 @@ module.exports = async function handler(req,res){
     const foto=type.startsWith('image/');
     if(foto && (typeof caption!=='string'||!caption.trim()||caption.length>600)) return res.status(400).end();
     await call(bucket+path,'HEAD');
-    await call('/rest/v1/media_kiriman','POST',{jenis:foto?'foto':'video',lokasi_file:path,caption:foto?caption.trim():null});
-    res.json({ok:true});
+    headers.Prefer='return=representation';
+    const stored=await call('/rest/v1/media_kiriman','POST',{jenis:foto?'foto':'video',lokasi_file:path,caption:foto?caption.trim():null,...(foto && req.body.title ? {judul:String(req.body.title).trim().slice(0,90)} : {})});
+    res.json((await stored.json())[0]);
   }catch{res.status(502).json({error:'Proses media di Supabase gagal.'});}
 };

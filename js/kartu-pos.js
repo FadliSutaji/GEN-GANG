@@ -17,6 +17,15 @@ function addCollageCard(entry, prepend = false) {
         const heading = document.createElement('h2');
         heading.textContent = entry.title;
         paper.append(heading);
+        if(entry.id) paper.append(button('Edit judul',async()=>{
+            const next=prompt('Judul kartu',entry.title)?.trim();
+            if(!next || next===entry.title)return;
+            if(next.length>90){alert('Judul maksimal 90 karakter.');return}
+            if(await window.renameShared(entry.id,next)){
+                entry.title=next;
+                title.textContent=heading.textContent=photo.alt=next;
+            }
+        }));
         for (const line of entry.lines) {
             const paragraph = document.createElement('p');
             paragraph.textContent = line;
@@ -65,7 +74,7 @@ function addCollageCard(entry, prepend = false) {
 
 const addPhoto = document.createElement('details');
 addPhoto.className = 'add-collage-photo';
-addPhoto.innerHTML = '<summary>＋ Tambah foto &amp; caption</summary><form><label>Foto<input type="file" accept="image/*" required></label><label>Caption<textarea required maxlength="600" rows="3" placeholder="Tulis caption foto"></textarea></label><button type="submit">Tambahkan ke kolase</button><p role="status"></p></form>';
+addPhoto.innerHTML = '<summary>＋ Tambah foto &amp; caption</summary><form><label>Foto<input type="file" accept="image/*" required></label><label>Judul (opsional)<input type="text" maxlength="90"></label><label>Caption<textarea required maxlength="600" rows="3" placeholder="Tulis caption foto"></textarea></label><button type="submit">Tambahkan ke kolase</button><p role="status"></p></form>';
 collage.before(addPhoto);
 const photoForm = addPhoto.querySelector('form');
 const fileInput = photoForm.querySelector('input');

@@ -6,21 +6,41 @@
         if(!response.ok) throw Error(response.status===403?'Kode salah.':'Gagal menyimpan. Periksa konfigurasi Vercel dan ukuran file.');
         return response.json();
     }
-    async function upload(file,caption,code){
+    const seen=new Set();
+    function showRow(row){
+        if(seen.has(row.id)) return;
+        seen.add(row.id);
+        const url=publicRoot+row.lokasi_file;
+        if(row.jenis==='video'){
+            channels.push({id:row.id,title:'Video ucapan',url});
+            renderVideoList(el('list'),()=>videoWindow.minimize());
+            renderVideoList(cinemaEntries,closeCinemaList);
+        }else addCollageCard({id:row.id,title:row.judul||'Kartu pos',tag:'',lines:[row.caption],photo:url},true);
+    }
+    window.renameShared=async(id,title)=>{
+        const code=prompt('Kode admin untuk mengedit judul');
+        if(!code)return false;
+        try{await api({action:'rename',id,title,code});return true}
+        catch(e){alert(e.message);return false}
+    };
+    async function upload(file,caption,code,title){
         const {path,url}=await api({action:'sign',code,type:file.type});
         const response=await fetch(url,{method:'PUT',headers:{'Content-Type':file.type},body:file});
         if(!response.ok) throw Error('Upload file gagal. Periksa format dan ukuran file.');
-        await api({action:'finish',code,path,type:file.type,caption});
+        showRow(await api({action:'finish',code,path,type:file.type,caption,title}));
     }
     const picker=document.querySelector('.upload input');
+    const status=document.createElement('p');
+    status.setAttribute('role','status');
+    picker.closest('.upload').after(status);
     picker.onchange=async()=>{
         const code=prompt('Kode undangan');
         if(!code){picker.value='';return}
         picker.disabled=true;
         try{
-            for(const file of picker.files) await upload(file,null,code);
-            location.reload();
-        }catch(e){alert(e.message)}finally{picker.disabled=false;picker.value=''}
+            for(const file of picker.files){status.textContent='Mengirim '+file.name+'…';await upload(file,null,code)}
+            status.textContent='Video terkirim.';
+        }catch(e){status.textContent=e.message}finally{picker.disabled=false;picker.value=''}
     };
     photoForm.onsubmit=async event=>{
         event.preventDefault();
@@ -29,7 +49,7 @@
         const submit=photoForm.querySelector('button');
         submit.disabled=true;
         photoStatus.textContent='Mengirim foto…';
-        try{await upload(fileInput.files[0],captionInput.value,code);location.reload()}
+        try{await upload(fileInput.files[0],captionInput.value,code,titleInput.value);photoForm.reset();photoStatus.textContent='Foto terkirim.'}
         catch(e){photoStatus.textContent=e.message}finally{submit.disabled=false}
     };
     window.deleteShared=async id=>{
@@ -40,11 +60,6 @@
     try{
         const response=await fetch(config.url+'/rest/v1/media_kiriman?select=*&order=dibuat_pada.asc,id.asc',{headers:{apikey:config.publishableKey}});
         if(!response.ok)throw Error();
-        for(const row of await response.json()){
-            const url=publicRoot+row.lokasi_file;
-            if(row.jenis==='video') channels.push({id:row.id,title:'Video ucapan',url});
-            else addCollageCard({id:row.id,title:'Kartu pos',tag:'',lines:[row.caption],photo:url},true);
-        }
-        renderVideoList(el('list'),()=>videoWindow.minimize());
+        for(const row of await response.json()) showRow(row);
     }catch{el('list').textContent='Daftar kiriman belum bisa dimuat.'}
 })();
