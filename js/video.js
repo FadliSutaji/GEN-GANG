@@ -29,6 +29,7 @@ function renderVideoList(list, pick) {
         const row = document.createElement('div');
         row.className = 'media-list-row';
         const remove = button('Hapus', () => {
+            if(channel.id) return window.deleteShared(channel.id);
             if (!window.confirm('Hapus video "' + channel.title + '" dari daftar?')) return;
             const activeChannel = channels[current];
             const wasPlaying = on && activeChannel === channel;

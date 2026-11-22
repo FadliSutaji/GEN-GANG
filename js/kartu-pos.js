@@ -10,7 +10,7 @@ let openLetterEntry = null;
 function addCollageCard(entry, prepend = false) {
     const card = button('', () => {
         const photo = document.createElement('img');
-        photo.src = entry.photo || groupPhoto;
+        photo.src = entry.photo;
         photo.alt = entry.title;
         const paper = document.createElement('div');
         paper.className = 'letter-paper';
@@ -22,9 +22,6 @@ function addCollageCard(entry, prepend = false) {
             paragraph.textContent = line;
             paper.append(paragraph);
         }
-        const signature = document.createElement('strong');
-        signature.textContent = 'Dari kami, HIGH MFS';
-        if (!entry.photo) paper.append(signature);
         letterDetail.replaceChildren(photo,paper);
         openLetterEntry = entry;
         if (entry.photo) paper.append(button('Hapus kartu', removeCard));
@@ -32,7 +29,7 @@ function addCollageCard(entry, prepend = false) {
         letterDetail.parentElement.scrollTop = 0;
     });
     const preview = document.createElement('img');
-    preview.src = entry.photo || groupPhoto;
+    preview.src = entry.photo;
     preview.alt = '';
     preview.loading = 'lazy';
     const title = document.createElement('strong');
@@ -50,6 +47,7 @@ function addCollageCard(entry, prepend = false) {
     tile.className = 'collage-tile';
     tile.append(card);
     function removeCard() {
+        if(entry.id) return window.deleteShared(entry.id);
         if (!window.confirm('Hapus foto, judul, dan caption ini?')) return;
         if (openLetterEntry === entry) {
             letterWindow.close();
@@ -63,11 +61,11 @@ function addCollageCard(entry, prepend = false) {
     if (prepend) collage.prepend(tile);
     else collage.append(tile);
 }
-letters.forEach(entry => addCollageCard(entry));
+
 
 const addPhoto = document.createElement('details');
 addPhoto.className = 'add-collage-photo';
-addPhoto.innerHTML = '<summary>＋ Tambah foto &amp; caption</summary><form><label>Foto<input type="file" accept="image/*" required></label><label>Judul<input type="text" required maxlength="90" placeholder="Judul kartu"></label><label>Caption<textarea required maxlength="600" rows="3" placeholder="Tulis caption foto"></textarea></label><button type="submit">Tambahkan ke kolase</button><p role="status"></p></form>';
+addPhoto.innerHTML = '<summary>＋ Tambah foto &amp; caption</summary><form><label>Foto<input type="file" accept="image/*" required></label><label>Caption<textarea required maxlength="600" rows="3" placeholder="Tulis caption foto"></textarea></label><button type="submit">Tambahkan ke kolase</button><p role="status"></p></form>';
 collage.before(addPhoto);
 const photoForm = addPhoto.querySelector('form');
 const fileInput = photoForm.querySelector('input');

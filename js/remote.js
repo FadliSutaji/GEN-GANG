@@ -129,20 +129,3 @@ shell.append(buildTimeline());
 
 const remoteWindow = createWindow('Remote TV','▣',[remotePanel],0);
 const videoWindow = createWindow('Video Ucapan','▶',[el('list'),document.querySelector('.upload')],6);
-const originalPostcard = document.querySelector('.postcard');
-const groupPhoto = originalPostcard.querySelector('img').src;
-originalPostcard.remove();
-const letters = [
-    {title:'Dari HIGH MFS', tag:'Ucapan bareng', lines:[
-        'Selamat ulang tahun! Makasih udah jadi bagian dari semua cerita, obrolan random, dan momen yang bikin kita ketawa lagi tiap diinget.',
-        'Semoga tahun ini banyak alasan baru buat senyum. Kalau kangen, nyalain TV-nya lagi.'
-    ]},
-    {title:'Satu foto, banyak cerita', tag:'Kenangan', lines:[
-        'Satu foto ini nggak cukup buat nyimpen semua cerita di baliknya. Yang paling lucu justru sering kejadian sebelum dan sesudah kameranya jepret.',
-        'Selamat ulang tahun! Semoga kita punya banyak kesempatan buat foto bareng lagi.'
-    ]},
-    {title:'Sampai ketemu lagi', tag:'Pesan buat nanti', lines:[
-        'Semoga tahun ini lebih banyak waktu buat hal-hal yang kamu suka dan orang-orang yang bikin kamu nyaman.',
-        'Kalau udah lama nggak ketemu, kita cari waktu buat makan bareng lagi, ya.'
-    ]}
-];
