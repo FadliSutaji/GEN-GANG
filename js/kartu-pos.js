@@ -16,7 +16,7 @@ function addCollageCard(entry, prepend = false) {
         paper.className = 'letter-paper';
         const heading = document.createElement('h2');
         heading.textContent = entry.title;
-        paper.append(heading);
+        paper.append(heading,uploadTime(entry.uploadedAt));
         if(entry.id) paper.append(button('Edit judul',async()=>{
             const next=prompt('Judul kartu',entry.title)?.trim();
             if(!next || next===entry.title)return;
@@ -45,7 +45,7 @@ function addCollageCard(entry, prepend = false) {
     title.textContent = entry.title;
     const label = document.createElement('small');
     label.textContent = entry.tag;
-    card.append(preview,title,label);
+    card.append(preview,title,label,uploadTime(entry.uploadedAt));
     if (entry.photo) {
         const captionPreview = document.createElement('small');
         captionPreview.className = 'caption-preview';

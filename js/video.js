@@ -1,5 +1,19 @@
 const el=id=>document.getElementById(id);
 const channels=['Selamat ulang tahun!','Breaking News Anak Kos','Klarifikasi Jam 2 Pagi'].map(title=>({title}));
+const uploadDateFormat = new Intl.DateTimeFormat('id-ID', {
+    timeZone: 'Asia/Jakarta', dateStyle: 'medium', timeStyle: 'short'
+});
+function uploadTime(timestamp) {
+    const time = document.createElement('time');
+    const date = timestamp ? new Date(timestamp) : null;
+    if (!date || Number.isNaN(date.getTime())) {
+        time.hidden = true;
+        return time;
+    }
+    time.dateTime = date.toISOString();
+    time.textContent = uploadDateFormat.format(date) + ' WIB';
+    return time;
+}
 const watched=new Set(), video=document.querySelector('video'), dialog=document.querySelector('dialog');
 let current=0,on=false;
 function tune(index){
@@ -25,6 +39,9 @@ function renderVideoList(list, pick) {
         const item = document.createElement('button');
         item.type = 'button';
         item.textContent = 'CH ' + (index + 1) + ' · ' + channel.title + (watched.has(index) ? ' ✓' : '');
+        const timestamp = uploadTime(channel.uploadedAt);
+        timestamp.style.display = timestamp.hidden ? 'none' : 'block';
+        item.append(timestamp);
         item.onclick = () => { tune(index); pick(); };
         const row = document.createElement('div');
         row.className = 'media-list-row';

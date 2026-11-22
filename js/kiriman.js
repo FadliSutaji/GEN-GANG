@@ -12,10 +12,10 @@
         seen.add(row.id);
         const url=publicRoot+row.lokasi_file;
         if(row.jenis==='video'){
-            channels.push({id:row.id,title:'Video ucapan',url});
+            channels.push({id:row.id,title:'Video ucapan',uploadedAt:row.dibuat_pada,url});
             renderVideoList(el('list'),()=>videoWindow.minimize());
             renderVideoList(cinemaEntries,closeCinemaList);
-        }else addCollageCard({id:row.id,title:row.judul||'Kartu pos',tag:'',lines:[row.caption],photo:url},true);
+        }else addCollageCard({id:row.id,title:row.judul||'Kartu pos',uploadedAt:row.dibuat_pada,tag:'',lines:[row.caption],photo:url},true);
     }
     window.renameShared=async(id,title)=>{
         const code=prompt('Kode admin untuk mengedit judul');
